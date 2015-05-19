@@ -89,6 +89,7 @@
     <ClCompile Include="env.c" />
     <ClCompile Include="exp.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="parser.c" />
     <ClCompile Include="print.c" />
     <ClCompile Include="scanadt.c" />
     <ClCompile Include="symtab.c" />
