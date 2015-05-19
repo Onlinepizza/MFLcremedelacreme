@@ -18,7 +18,7 @@ main(){
 
 		if (token == ':'){
 			token = ReadToken(scanner);
-			if (token == 'l' || token == "load"){
+			if (token == 'l' || StringEqual(token, "load")){
 
 			}
 			else if (token == 'd' || StringEqual(token, "define")){
