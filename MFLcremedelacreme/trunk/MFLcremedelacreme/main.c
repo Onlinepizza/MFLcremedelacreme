@@ -1,5 +1,6 @@
 #include "scanadt.h"
 #include "genlib.h"
+#include "strlib.h"
 #include "exception.h"
 
 main(){
@@ -20,13 +21,13 @@ main(){
 			if (token == 'l' || token == "load"){
 
 			}
-			else if (token == 'd' || token == "define"){
+			else if (token == 'd' || StringEqual(token, "define")){
 
 			}
-			else if(token == 'h' || token == "help"){
+			else if(token == 'h' || StringEqual(token, "help")){
 
 			}
-			else if (token == 'q' || token == "quit"){
+			else if (token == 'q' || StringEqual(token, "quit")){
 				exit(0);
 			}
 			else{
