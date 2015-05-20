@@ -7,10 +7,7 @@
 #include "exp.h"
 #include "scanadt.h"
 
-expADT ReadE(scannerADT scanner, int prec);
-expADT readT(scannerADT scanner);
-expADT readC(scannerADT scanner);
-//expADT readF(scannerADT scanner);
+
 
 /*
 * Type: expADT
@@ -41,78 +38,125 @@ expADT readC(scannerADT scanner);
 *
 */
 
-expADT ReadE(scannerADT scanner, int prec)
+/* Function: readE
+ *
+ *
+ *   E -> T + E
+ *   E -> T - E
+ *   E -> T
+ */
+
+static expADT ReadE(scannerADT scanner)
 {
 	expADT exp, rhs;
 	string token;
 	int newPrec;
 
 	exp = ReadT(scanner);
-	while (TRUE) {
-		token = ReadToken(scanner);
-		newPrec = Precedence(token);
-		if (newPrec <= prec) break;
-		rhs = ReadE(scanner, newPrec);
+	token = ReadToken(scanner);
+	if (IsOperator(token)){
+		rhs = ReadE(scanner);
 		exp = NewCompoundExp(token[0], exp, rhs);
 	}
-	SaveToken(scanner, token);
+	else{
+		SaveToken(scanner, token);
+	}
 	return (exp);
 }
 
-expADT readT(scannerADT scanner){
+/*   Function: readT
+ *
+ *   T -> C * T
+ *   T -> C / T
+ *   T -> C
+ */
+
+static expADT readT(scannerADT scanner){
 	expADT exp, rhs;
 	string token;
 	int newPrec;
 
 	exp = ReadC(scanner);
-	while (TRUE) {
-		token = ReadToken(scanner);
-		newPrec = Precedence(token);
-		//if (newPrec != 3 ) break;
-		rhs = ReadE(scanner, newPrec);
+	token = ReadToken(scanner);
+	if (IsOperator(token)){
+		rhs = ReadT(scanner);
 		exp = NewCompoundExp(token[0], exp, rhs);
 	}
-	SaveToken(scanner, token);
+	else{
+		SaveToken(scanner, token);
+	}
 	return (exp);
 }
 
-expADT readC(scannerADT scanner){
+/*   Function: readC
+ *
+ *   C -> F (E)
+ *   C -> F
+ */
+
+static expADT readC(scannerADT scanner){
 	expADT exp, rhs;
 	string token;
 
 	exp = readF(scanner);
-	token = Precedence(scanner);
+	token = ReadToken(scanner);
 	if (StringEqual(token, "(")) {
 		rhs = ReadE(scanner, 0);
 		if (!StringEqual(ReadToken(scanner), ")")){
 				Error("Unbalanced parentheses");
 			}
-		exp =NewCallExp(exp, rhs);
+		exp = NewCallExp(exp, rhs);		//C -> F (E)
+	}
+	else {
+		//ingen aning om detta är rätt.
+		SaveToken(scanner, token);		//C -> F
 	}
 	return(exp);
 }
 
-/*expADT readF(scannerADT scanner){
-	expADT exp;
+/*	 Function: readF
+ *
+ *   F -> (E)
+ *   F -> if E RelOp E then E else E
+ *   F -> func (identifier) { E }
+ *   F -> integer
+ *   F -> identifier
+ */
+
+static expADT readF(scannerADT scanner){
+	expADT exp, lhs, rhs, thenpart, elsepart;
 	string token;
+	char relop;
 
 	token = ReadToken(scanner);
 	if (StringEqual(token, "(")) {
-		exp = ReadE(scanner, 0);
+		exp = ReadE(scanner);				//F -> (E)
 		if (!StringEqual(ReadToken(scanner), ")")) {
 			Error("Unbalanced parentheses");
 		}
+	}
+	//här ska if och func även behandlas.
+	else if (isalpha(token[0])){
+		exp = NewIdentifierExp(token); // F -> identifier
+	}
+	else if (isdigit(token[0])){
+		exp = NewIntegerExp(StringToInteger(token)); // F -> integer
+	}
+	return(exp);
+}
 
-}*/
 
-
-int Precedence(string token)
-{
-	if (StringLength(token) > 1) return (0);
-	switch (token[0]) {
-	case '=': return (1);
-	case '+': case '-': return (2);
-	case '*': case '/': return (3);
-	default:  return (0);
+static bool IsOperator(string token){
+	if (StringLength(token) != 1){ 
+		return FALSE; }
+	switch (token[0]){
+	case '+':
+	case '-':
+	case '*':
+	case '/':
+	case '=':
+		return TRUE;
+	default:
+		return FALSE;
 	}
 }
