@@ -124,7 +124,7 @@ static expADT readC(scannerADT scanner){
  */
 
 static expADT readF(scannerADT scanner){
-	expADT exp, lhs, rhs, thenpart, elsepart;
+	expADT exp;
 	string token;
 	char relop;
 
@@ -135,7 +135,16 @@ static expADT readF(scannerADT scanner){
 			Error("Unbalanced parentheses");
 		}
 	}
-	//här ska if och func även behandlas.
+	else if (StringEqual(token, "if"))
+	{
+		exp = ReadE(scanner);
+		//hur plockar man ut realop?
+		exp = NewIfExp(exp, /*realop*/, exp, exp, exp); //F -> if E RelOp E then E else E
+
+	}
+	else if (){
+		// F -> func (identifier) { E }
+	}
 	else if (isalpha(token[0])){
 		exp = NewIdentifierExp(token); // F -> identifier
 	}
