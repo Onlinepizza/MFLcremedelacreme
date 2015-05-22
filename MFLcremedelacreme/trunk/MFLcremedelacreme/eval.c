@@ -3,6 +3,7 @@
 #include "strlib.h"
 #include "exp.h"
 #include "eval.h"
+#include "value.h"
 #include "symtab.h"
 /*
 * Private variable: variableTable
@@ -17,16 +18,16 @@ static symtabADT variableTable;
 static int EvalCompound(expADT exp);
 
 /* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	type = ExpType(exp);	switch (type){	case FuncExp:
-		break;
+		//rekursivt anrop
 	case IfExp:
-		break;
+		//rekursivt anrop
 	case CallExp:
-		break;
+		//rekursivt anrop
 	case ConstExp:
-		return (ExpInteger(exp));
+		return NewIntegerValue((ExpInteger(exp)));
 	case IdentifierExp:
-		return (GetIdentifierValue(ExpIdentifier(exp)));
-	case CompoundExp:		return (EvalCompound(exp));	}}
+		return NewIntegerValue(GetIdentifierValue(ExpIdentifier(exp)));
+	case CompoundExp:		return NewIntegerValue((EvalCompound(exp)));	}}
 void InitVariableTable(void)
 {
 	variableTable = NewSymbolTable();
