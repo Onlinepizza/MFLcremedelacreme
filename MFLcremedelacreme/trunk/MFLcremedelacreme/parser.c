@@ -54,7 +54,7 @@ static expADT ReadE(scannerADT scanner)
 	
 	exp = ReadT(scanner);
 	token = ReadToken(scanner);
-	if (IsOperator(token)){
+	if (IsPlusMinusOperator(token)){
 		rhs = ReadE(scanner);
 		exp = NewCompoundExp(token[0], exp, rhs);
 	}
@@ -80,7 +80,7 @@ static expADT readT(scannerADT scanner){
 
 	exp = ReadC(scanner);
 	token = ReadToken(scanner);
-	if (IsOperator(token)){
+	if (IsTimesDivOperator){
 		rhs = ReadT(scanner);
 		exp = NewCompoundExp(token[0], exp, rhs);
 	}
@@ -110,8 +110,7 @@ static expADT readC(scannerADT scanner){
 		exp = NewCallExp(exp, rhs);		//C -> F (E)
 	}
 	else {
-		//ingen aning om detta är rätt.
-		SaveToken(scanner, token);		//C -> F
+		SaveToken(scanner, token);	
 	}
 	return(exp);
 }
@@ -127,7 +126,7 @@ static expADT readC(scannerADT scanner){
 
 static expADT readF(scannerADT scanner){
 	expADT exp, lhs, rhs, ifPart, elsePart;
-	string token, token2;
+	string token;
 	char relop;
 
 	token = ReadToken(scanner);
@@ -139,19 +138,36 @@ static expADT readF(scannerADT scanner){
 	}
 	else if (StringEqual(token, "if"))
 	{
-		if (IsRealOp(token)){
-			lhs = ReadE(scanner);
-			token2 = ReadToken(scanner);
+		lhs = ReadE(scanner);
+		token = ReadToken(scanner);
+		if (IsRealOp(token)){			
 			rhs = ReadE(scanner);
-			ifPart = ReadE(scanner);
-			elsePart = ReadE(scanner);
-
-			exp = NewIfExp(lhs, token2, rhs, ifPart, elsePart); //F -> if E RelOp E then E else E
+			if (StringEqual(ReadToken(scanner), "then")){
+				ifPart = ReadE(scanner);
+				if (StringEqual(ReadToken(scanner), "else")){
+					elsePart = ReadE(scanner);
+					exp = NewIfExp(lhs, token, rhs, ifPart, elsePart); //F -> if E RelOp E then E else E
+				}
+			}
 		}
-		//hur plockar man ut realop?
 
 	}
-	else if (){
+	else if (StringEqual(token, "func")){
+		if (StringEqual(token, "(")) {
+			token = ReadToken(scanner);
+			if (!StringEqual(ReadToken(scanner), ")")) {
+				Error("Unbalanced parentheses");
+			}
+			if (StringEqual(token, "{")) {
+				rhs = ReadE(scanner);
+				if (!StringEqual(ReadToken(scanner), "}")) {
+					Error("Unbalanced parentheses");
+				}
+			}
+			exp = NewFuncExp(token, rhs);
+		}
+
+		
 		// F -> func (identifier) { E }
 	}
 	else if (isalpha(token[0])){
@@ -160,22 +176,34 @@ static expADT readF(scannerADT scanner){
 	else if (isdigit(token[0])){
 		exp = NewIntegerExp(StringToInteger(token)); // F -> integer
 	}
+	else {
+		SaveToken(scanner, token);	
+	}
 	return(exp);
 }
 
 
-static bool IsOperator(string token){
+static bool IsPlusMinusOperator(string token){
 	if (StringLength(token) != 1){
 		return FALSE;
 	}
 	switch (token[0]){
 	case '+':
 	case '-':
+		return TRUE;
+	default:
+		return FALSE;
+	}
+}
+
+
+static bool IsTimesDivOperator(string token){
+	if (StringLength(token) != 1){
+		return FALSE;
+	}
+	switch (token[0]){
 	case '*':
 	case '/':
-	case '=':
-	case '<':
-	case '>':
 		return TRUE;
 	default:
 		return FALSE;
