@@ -87,6 +87,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="env.c" />
+    <ClCompile Include="eval.c" />
     <ClCompile Include="exp.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="parser.c" />

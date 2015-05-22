@@ -137,6 +137,7 @@ static expADT readF(scannerADT scanner){
 	}
 	else if (StringEqual(token, "if"))
 	{
+		//token = ReadToken 
 		exp = ReadE(scanner);
 		//hur plockar man ut realop?
 		exp = NewIfExp(exp, /*realop*/, exp, exp, exp); //F -> if E RelOp E then E else E
@@ -169,3 +170,18 @@ static bool IsOperator(string token){
 		return FALSE;
 	}
 }
+
+static bool IsRealOp(string token){
+	if (StringLength(token) != 1){
+		return FALSE;
+	}
+	switch (token[0]){
+	case '=':
+	case '<':
+	case '>':
+		return TRUE;
+	default:
+		return FALSE;
+	}
+}
+
