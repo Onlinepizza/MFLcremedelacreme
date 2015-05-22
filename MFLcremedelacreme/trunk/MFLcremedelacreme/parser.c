@@ -39,19 +39,19 @@
 */
 
 /* Function: readE
- *
- *
- *   E -> T + E
- *   E -> T - E
- *   E -> T
- */
+*
+*
+*   E -> T + E
+*   E -> T - E
+*   E -> T
+*/
 
 static expADT ReadE(scannerADT scanner)
 {
 	expADT exp, rhs;
 	string token;
 	int newPrec;
-
+	
 	exp = ReadT(scanner);
 	token = ReadToken(scanner);
 	if (IsOperator(token)){
@@ -61,15 +61,17 @@ static expADT ReadE(scannerADT scanner)
 	else{
 		SaveToken(scanner, token);
 	}
+	
+
 	return (exp);
 }
 
 /*   Function: readT
- *
- *   T -> C * T
- *   T -> C / T
- *   T -> C
- */
+*
+*   T -> C * T
+*   T -> C / T
+*   T -> C
+*/
 
 static expADT readT(scannerADT scanner){
 	expADT exp, rhs;
@@ -89,10 +91,10 @@ static expADT readT(scannerADT scanner){
 }
 
 /*   Function: readC
- *
- *   C -> F (E)
- *   C -> F
- */
+*
+*   C -> F (E)
+*   C -> F
+*/
 
 static expADT readC(scannerADT scanner){
 	expADT exp, rhs;
@@ -101,31 +103,31 @@ static expADT readC(scannerADT scanner){
 	exp = readF(scanner);
 	token = ReadToken(scanner);
 	if (StringEqual(token, "(")) {
-		rhs = ReadE(scanner, 0);
+		rhs = ReadE(scanner);
 		if (!StringEqual(ReadToken(scanner), ")")){
-				Error("Unbalanced parentheses");
-			}
+			Error("Unbalanced parentheses");
+		}
 		exp = NewCallExp(exp, rhs);		//C -> F (E)
 	}
 	else {
-		//ingen aning om detta är rätt.
+		//ingen aning om detta Ã¤r rÃ¤tt.
 		SaveToken(scanner, token);		//C -> F
 	}
 	return(exp);
 }
 
 /*	 Function: readF
- *
- *   F -> (E)
- *   F -> if E RelOp E then E else E
- *   F -> func (identifier) { E }
- *   F -> integer
- *   F -> identifier
- */
+*
+*   F -> (E)
+*   F -> if E RelOp E then E else E
+*   F -> func (identifier) { E }
+*   F -> integer
+*   F -> identifier
+*/
 
 static expADT readF(scannerADT scanner){
-	expADT exp;
-	string token;
+	expADT exp, lhs, rhs, ifPart, elsePart;
+	string token, token2;
 	char relop;
 
 	token = ReadToken(scanner);
@@ -137,10 +139,16 @@ static expADT readF(scannerADT scanner){
 	}
 	else if (StringEqual(token, "if"))
 	{
-		//token = ReadToken 
-		exp = ReadE(scanner);
+		if (IsRealOp(token)){
+			lhs = ReadE(scanner);
+			token2 = ReadToken(scanner);
+			rhs = ReadE(scanner);
+			ifPart = ReadE(scanner);
+			elsePart = ReadE(scanner);
+
+			exp = NewIfExp(lhs, token2, rhs, ifPart, elsePart); //F -> if E RelOp E then E else E
+		}
 		//hur plockar man ut realop?
-		exp = NewIfExp(exp, /*realop*/, exp, exp, exp); //F -> if E RelOp E then E else E
 
 	}
 	else if (){
@@ -157,14 +165,17 @@ static expADT readF(scannerADT scanner){
 
 
 static bool IsOperator(string token){
-	if (StringLength(token) != 1){ 
-		return FALSE; }
+	if (StringLength(token) != 1){
+		return FALSE;
+	}
 	switch (token[0]){
 	case '+':
 	case '-':
 	case '*':
 	case '/':
 	case '=':
+	case '<':
+	case '>':
 		return TRUE;
 	default:
 		return FALSE;
@@ -184,4 +195,3 @@ static bool IsRealOp(string token){
 		return FALSE;
 	}
 }
-
