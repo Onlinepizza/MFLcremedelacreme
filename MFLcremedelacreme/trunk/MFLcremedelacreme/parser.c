@@ -118,7 +118,7 @@ static expADT ReadT(scannerADT scanner){
 *   C -> F
 */
 
-static expADT readC(scannerADT scanner){
+static expADT ReadC(scannerADT scanner){
 	expADT exp, rhs;
 	string token;
 
@@ -146,7 +146,7 @@ static expADT readC(scannerADT scanner){
 *   F -> identifier
 */
 
-static expADT readF(scannerADT scanner){
+static expADT ReadF(scannerADT scanner){
 	expADT exp, lhs, rhs, ifPart, elsePart;
 	string token;
 	char relop;
