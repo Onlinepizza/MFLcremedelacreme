@@ -21,14 +21,13 @@ int GetIdValue(string name);
 void SetIdentifierValue(string name, int value);
 static int EvalCompound(expADT exp);
 
-/* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	expADT lhs, rhs, ifpart, elsepart;	environmentADT closure;	char op;	type = ExpType(exp);	switch (type){	case FuncExp:
+/* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	expADT lhs = NULL, rhs = NULL, ifpart = NULL, elsepart = NULL;	environmentADT closure;	char op;	type = ExpType(exp);	switch (type){	case FuncExp:
 		closure = NewClosure(env);
 		return NewFuncValue(GetFuncFormalArg(exp), GetFuncBody(exp), closure);
 	case IfExp:
 		closure = NewClosure(env);
 		op = GetIfRelOp(exp);
-		switch (op)
-		{
+		switch (op){
 		case '=':
 			if (GetIntValue(Eval(GetIfLHSExpression(exp), closure)) == GetIntValue(Eval(GetIfRHSExpression(exp), closure))){
 				Eval(GetIfThenPart(exp), closure);
@@ -98,8 +97,8 @@ static int EvalCompound(expADT exp, environmentADT env)
 		SetIdentifierValue(ExpIdentifier(ExpLHS(exp)), rhs);
 		return (rhs);
 	}
-	lhs = Eval(ExpLHS(exp), closure);
-	rhs = Eval(ExpRHS(exp), closure);
+	lhs = ExpInteger(ExpLHS(exp));
+	rhs = ExpInteger(ExpRHS(exp));
 	switch (op) {
 	case '+': return (lhs + rhs);
 	case '-': return (lhs - rhs);
