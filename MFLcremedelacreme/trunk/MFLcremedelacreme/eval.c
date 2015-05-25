@@ -21,7 +21,7 @@ int GetIdValue(string name);
 void SetIdentifierValue(string name, int value);
 static int EvalCompound(expADT exp);
 
-/* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	expADT lhs = NULL, rhs = NULL, ifpart = NULL, elsepart = NULL;	environmentADT closure;	char op;	type = ExpType(exp);	switch (type){	case FuncExp:
+/* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	expADT lhs = NULL, rhs = NULL, ifpart = NULL, elsepart = NULL, funcExp = NULL, arg = NULL;	valueADT value;	environmentADT closure;	char op;	string id;	type = ExpType(exp);	switch (type){	case FuncExp:
 		closure = NewClosure(env);
 		return NewFuncValue(GetFuncFormalArg(exp), GetFuncBody(exp), closure);
 	case IfExp:
@@ -52,7 +52,21 @@ static int EvalCompound(expADT exp);
 		}
 		
 	case CallExp:
-		
+		value = Eval(GetCallExp(exp), env);
+		funcExp = GetCallExp(exp);
+		if ( ValueType(value) == FuncValue){
+			arg = GetCallActualArg(exp);
+			closure = GetFuncValueClosure(value);
+			id = GetFuncValueFormalArg(value);
+			DefineIdentifier(closure, funcExp, arg, env);
+			return Eval(GetFuncValueBody(value), closure);
+		}
+		else{
+			return value;
+		}
+
+			//environmentADT closure = GetFuncValueClosure()
+			//DefineIdentifier(closure, argName, actualArg, env);
 
 		//rekursivt anrop
 	case ConstExp:
