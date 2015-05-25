@@ -30,24 +30,24 @@ static int EvalCompound(expADT exp);
 		switch (op){
 		case '=':
 			if (GetIntValue(Eval(GetIfLHSExpression(exp), closure)) == GetIntValue(Eval(GetIfRHSExpression(exp), closure))){
-				Eval(GetIfThenPart(exp), closure);
+				return Eval(GetIfThenPart(exp), closure);
 			}
 			else{
-				Eval(GetIfElsePart(exp), closure);
+				return Eval(GetIfElsePart(exp), closure);
 			}
 		case '>':
 			if (GetIntValue(Eval(GetIfLHSExpression(exp), closure)) > GetIntValue(Eval(GetIfRHSExpression(exp), closure))){
-				Eval(GetIfThenPart(exp), closure);
+				return Eval(GetIfThenPart(exp), closure);
 			}
 			else{
-				Eval(GetIfElsePart(exp), closure);
+				return Eval(GetIfElsePart(exp), closure);
 			}
 		case '<':
 			if (GetIntValue(Eval(GetIfLHSExpression(exp), closure)) < GetIntValue(Eval(GetIfRHSExpression(exp), closure))){
-				Eval(GetIfThenPart(exp), closure);
+				return Eval(GetIfThenPart(exp), closure);
 			}
 			else{
-				Eval(GetIfElsePart(exp), closure);
+				return Eval(GetIfElsePart(exp), closure);
 			}
 		}
 		
