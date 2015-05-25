@@ -7,6 +7,8 @@
 #include "symtab.h"
 #include "parser.h"
 #include "eval.h"
+#include "print.h"
+#include "ctype.h"
 
 
 void loadFunction(scannerADT scanner, symtabADT table){
@@ -27,14 +29,18 @@ void loadFunction(scannerADT scanner, symtabADT table){
 	}
 	fclose(fileName);
 }
+
 void defineFunction(scannerADT scanner, symtabADT table, environmentADT env){
 	expADT exp;
 	string token;
-	int value = 0;
+	valueADT value;
+	int result;
+
 	token = ReadToken(scanner);
 
 	exp = ParseExp(scanner);
 	value = Eval(exp, env);
+	result = GetIntValue(value);
 
 	Enter(table, token, value);
 }
@@ -61,6 +67,8 @@ main(){
 	symtabADT table;
 	expADT exp;
 	valueADT value;
+	
+	int result, var;
 
 	void(*functionPtr)(scannerADT, symtabADT, environmentADT);
 
@@ -87,7 +95,6 @@ main(){
 		SetScannerString(scanner, line);
 		token = ReadToken(scanner);
 		
-
 		if (StringEqual(token, ":")){
 			token = ReadToken(scanner);
 			if (Lookup(table, token) != UNDEFINED){
@@ -99,13 +106,21 @@ main(){
 			}
 
 		}
-		else{
-			SaveToken(scanner, token);
-			exp = ParseExp(scanner);
-			value = Eval(exp, env);
-
-			printf("%d", value);
+		else{		
+			if (isdigit(token[0])){
+				SaveToken(scanner, token);
+				exp = ParseExp(scanner);
+				value = Eval(exp, env);
+				PrintValue(value);
+			}
+			else if (isalpha(token[0])){
+				var = Lookup(table, token);
+				exp = ParseExp(scanner);
+				value = Eval(exp, env);
+				PrintValue(value);
+			}			
 		}
 
+		printf("\n");
 	} endtry
 }
