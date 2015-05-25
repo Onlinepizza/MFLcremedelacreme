@@ -53,6 +53,7 @@ static int EvalCompound(expADT exp);
 		}
 	case CallExp:
 		closure = NewClosure(env);
+
 		//rekursivt anrop
 	case ConstExp:
 		return NewIntegerValue((ExpInteger(exp)));

@@ -1,9 +1,12 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "scanadt.h"
 #include "genlib.h"
 #include "strlib.h"
 #include "exception.h"
 #include "env.h"
 #include "symtab.h"
+#include "parser.h"
+#include "eval.h"
 
 void loadFunction(scannerADT scanner, symtabADT table){
 	FILE * infile;
@@ -17,10 +20,11 @@ void loadFunction(scannerADT scanner, symtabADT table){
 		Error("Can't open file.");
 	}
 	else {
-		while (fscanf(infile, "%s %d", key, parserShit()) != EOF) {
+		while (fscanf(infile, "%s %d", key, parserShit()) != EOF) { //key är oinstansierad.
 			Enter(table, key, parserShit());
 		}
 	}
+	fclose(fileName);
 }
 void defineFunction(scannerADT scanner, symtabADT table){
 	string token;
@@ -50,6 +54,8 @@ main(){
 	string line, token;
 	environmentADT env;
 	symtabADT table;
+	expADT exp;
+	valueADT value;
 
 	void(*functionPtr)(scannerADT, symtabADT);
 
@@ -59,21 +65,23 @@ main(){
 
 	GetScannerSpaceOption(scanner, IgnoreSpaces);
 
-	Enter(table, 'l', &loadFunction);
+	/*Enter(table, 'l', &loadFunction);
 	Enter(table, "load", &loadFunction);
 	Enter(table, 'd', &defineFunction);
 	Enter(table, "define", &defineFunction);
 	Enter(table, 'h', &helpFunction);
-	Enter(table, "help", &helpFunction);
+	Enter(table, "help", &helpFunction);*/
 	Enter(table, 'q', &quitFunction);
 	Enter(table, "quit", &quitFunction);
 
 
 	while (TRUE)try{
-		
+
 		line = GetLine();
 		SetScannerString(scanner, line);
 		token = ReadToken(scanner);
+		exp = ParseExp(scanner);
+		value = Eval(exp, env);
 
 		if (token == ':'){
 			token = ReadToken(scanner);
