@@ -76,7 +76,7 @@ main(){
 	env = NewEnvironment();
 	table = NewSymbolTable();
 
-	GetScannerSpaceOption(scanner, IgnoreSpaces);
+	SetScannerSpaceOption(scanner, IgnoreSpaces);
 
 	Enter(table, "l", &loadFunction);
 	Enter(table, "load", &loadFunction);
@@ -94,6 +94,7 @@ main(){
 		line = GetLine();
 		SetScannerString(scanner, line);
 		token = ReadToken(scanner);
+		SaveToken(scanner, token);
 		
 		if (StringEqual(token, ":")){
 			token = ReadToken(scanner);
@@ -107,18 +108,9 @@ main(){
 
 		}
 		else{		
-			if (isdigit(token[0])){
-				SaveToken(scanner, token);
-				exp = ParseExp(scanner);
-				value = Eval(exp, env);
-				PrintValue(value);
-			}
-			else if (isalpha(token[0])){
-				var = Lookup(table, token);
-				exp = ParseExp(scanner);
-				value = Eval(exp, env);
-				PrintValue(value);
-			}			
+			exp = ParseExp(scanner);
+			value = Eval(exp, env);
+			PrintValue(value);
 		}
 
 		printf("\n");
