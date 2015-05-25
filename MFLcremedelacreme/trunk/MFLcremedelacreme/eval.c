@@ -64,10 +64,6 @@ static int EvalCompound(expADT exp);
 		else{
 			return value;
 		}
-
-			//environmentADT closure = GetFuncValueClosure()
-			//DefineIdentifier(closure, argName, actualArg, env);
-
 		//rekursivt anrop
 	case ConstExp:
 		return NewIntegerValue((ExpInteger(exp)));
