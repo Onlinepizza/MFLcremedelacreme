@@ -46,7 +46,7 @@ static bool IsTimesDivOperator(string token);
 static bool IsRealOp(string token);
 
 /*
-* Implementation notes: ParseExp
+* Implementation notes: ParseExp.
 * ------------------------------
 * This function just calls ReadE to read an expression and then
 * checks to make sure no tokens are left over.
@@ -148,7 +148,7 @@ static expADT ReadC(scannerADT scanner){
 */
 
 static expADT ReadF(scannerADT scanner){
-	expADT exp, lhs, rhs, ifPart, elsePart;
+	expADT exp = NULL, lhs, rhs = NULL, ifPart, elsePart;
 	string token;
 	char realop;
 
