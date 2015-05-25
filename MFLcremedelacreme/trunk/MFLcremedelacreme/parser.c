@@ -41,6 +41,9 @@ static expADT ReadE(scannerADT scanner);
 static expADT ReadT(scannerADT scanner);
 static expADT ReadC(scannerADT scanner);
 static expADT ReadF(scannerADT scanner);
+static bool IsPlusMinusOperator(string token);
+static bool IsTimesDivOperator(string token);
+static bool IsRealOp(string token);
 
 /*
 * Implementation notes: ParseExp
@@ -72,7 +75,6 @@ static expADT ReadE(scannerADT scanner)
 {
 	expADT exp, rhs;
 	string token;
-	int newPrec;
 
 	exp = ReadT(scanner);
 	token = ReadToken(scanner);
@@ -98,7 +100,6 @@ static expADT ReadE(scannerADT scanner)
 static expADT ReadT(scannerADT scanner){
 	expADT exp, rhs;
 	string token;
-	int newPrec;
 
 	exp = ReadC(scanner);
 	token = ReadToken(scanner);
@@ -147,9 +148,9 @@ static expADT ReadC(scannerADT scanner){
 */
 
 static expADT ReadF(scannerADT scanner){
-	expADT exp = NULL, lhs, rhs = NULL, ifPart, elsePart;
+	expADT exp, lhs, rhs, ifPart, elsePart;
 	string token;
-	char relop;
+	char realop;
 
 	token = ReadToken(scanner);
 	if (StringEqual(token, "(")) {
@@ -163,12 +164,13 @@ static expADT ReadF(scannerADT scanner){
 		lhs = ReadE(scanner);
 		token = ReadToken(scanner);
 		if (IsRealOp(token)){
+			realop = token[0];
 			rhs = ReadE(scanner);
 			if (StringEqual(ReadToken(scanner), "then")){
 				ifPart = ReadE(scanner);
 				if (StringEqual(ReadToken(scanner), "else")){
 					elsePart = ReadE(scanner);
-					exp = NewIfExp(lhs, token, rhs, ifPart, elsePart); //F -> if E RelOp E then E else E
+					exp = NewIfExp(lhs, realop, rhs, ifPart, elsePart); //F -> if E RelOp E then E else E
 				}
 			}
 		}
