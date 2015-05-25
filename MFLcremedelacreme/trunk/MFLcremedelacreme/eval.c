@@ -51,6 +51,7 @@ static int EvalCompound(expADT exp);
 				Eval(GetIfElsePart(exp), closure);
 			}
 		}
+		
 	case CallExp:
 		closure = NewClosure(env);
 
