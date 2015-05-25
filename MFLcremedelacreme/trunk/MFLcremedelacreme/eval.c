@@ -93,7 +93,7 @@ static int EvalCompound(expADT exp, environmentADT env)
 
 	op = ExpOperator(exp);
 	if (op == '=') {
-		rhs = EvalExp(ExpRHS(exp));
+		rhs = Eval(ExpRHS(exp), closure);
 		SetIdentifierValue(ExpIdentifier(ExpLHS(exp)), rhs);
 		return (rhs);
 	}
