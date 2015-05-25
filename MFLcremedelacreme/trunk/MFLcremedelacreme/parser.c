@@ -88,7 +88,7 @@ static expADT ReadE(scannerADT scanner)
 	return (exp);
 }
 
-/*   Function: readT
+/*   Function: readT.
 *
 *   T -> C * T
 *   T -> C / T
