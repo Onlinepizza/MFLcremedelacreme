@@ -37,6 +37,28 @@
 *   RelOp -> >
 *
 */
+static expADT ReadE(scannerADT scanner);
+static expADT readT(scannerADT scanner);
+static expADT readC(scannerADT scanner);
+static expADT readF(scannerADT scanner);
+
+/*
+* Implementation notes: ParseExp
+* ------------------------------
+* This function just calls ReadE to read an expression and then
+* checks to make sure no tokens are left over.
+*/
+
+expADT ParseExp(scannerADT scanner)
+{
+	expADT exp;
+
+	exp = ReadE(scanner);
+	if (MoreTokensExist(scanner)) {
+		Error("ParseExp: %s unexpected", ReadToken(scanner));
+	}
+	return (exp);
+}
 
 /* Function: readE
 *
@@ -51,7 +73,7 @@ static expADT ReadE(scannerADT scanner)
 	expADT exp, rhs;
 	string token;
 	int newPrec;
-	
+
 	exp = ReadT(scanner);
 	token = ReadToken(scanner);
 	if (IsPlusMinusOperator(token)){
@@ -61,7 +83,7 @@ static expADT ReadE(scannerADT scanner)
 	else{
 		SaveToken(scanner, token);
 	}
-	
+
 
 	return (exp);
 }
@@ -80,7 +102,7 @@ static expADT readT(scannerADT scanner){
 
 	exp = ReadC(scanner);
 	token = ReadToken(scanner);
-	if (IsTimesDivOperator){
+	if (IsTimesDivOperator(token)){
 		rhs = ReadT(scanner);
 		exp = NewCompoundExp(token[0], exp, rhs);
 	}
@@ -110,7 +132,7 @@ static expADT readC(scannerADT scanner){
 		exp = NewCallExp(exp, rhs);		//C -> F (E)
 	}
 	else {
-		SaveToken(scanner, token);	
+		SaveToken(scanner, token);
 	}
 	return(exp);
 }
@@ -140,7 +162,7 @@ static expADT readF(scannerADT scanner){
 	{
 		lhs = ReadE(scanner);
 		token = ReadToken(scanner);
-		if (IsRealOp(token)){			
+		if (IsRealOp(token)){
 			rhs = ReadE(scanner);
 			if (StringEqual(ReadToken(scanner), "then")){
 				ifPart = ReadE(scanner);
@@ -164,11 +186,8 @@ static expADT readF(scannerADT scanner){
 					Error("Unbalanced parentheses");
 				}
 			}
-			exp = NewFuncExp(token, rhs);
+			exp = NewFuncExp(token, rhs); // F -> func (identifier) { E }
 		}
-
-		
-		// F -> func (identifier) { E }
 	}
 	else if (isalpha(token[0])){
 		exp = NewIdentifierExp(token); // F -> identifier
@@ -177,7 +196,7 @@ static expADT readF(scannerADT scanner){
 		exp = NewIntegerExp(StringToInteger(token)); // F -> integer
 	}
 	else {
-		SaveToken(scanner, token);	
+		SaveToken(scanner, token);
 	}
 	return(exp);
 }
