@@ -8,10 +8,11 @@
 #include "parser.h"
 #include "eval.h"
 
+/*
 void loadFunction(scannerADT scanner, symtabADT table){
 	FILE * infile;
-	string fileName, key;
-	int value;
+	string fileName, key = NULL;
+	int value = 0;
 
 	fileName = GetLine();
 	infile = fopen(fileName, "r");
@@ -20,7 +21,7 @@ void loadFunction(scannerADT scanner, symtabADT table){
 		Error("Can't open file.");
 	}
 	else {
-		while (fscanf(infile, "%s %d", key, parserShit()) != EOF) { //key är oinstansierad.
+		while (fscanf(infile, "%s %d", key, parserShit()) != EOF) { //key Ã¤r oinstansierad.
 			Enter(table, key, parserShit());
 		}
 	}
@@ -28,12 +29,13 @@ void loadFunction(scannerADT scanner, symtabADT table){
 }
 void defineFunction(scannerADT scanner, symtabADT table){
 	string token;
-	int value;
+	int value = 0;
 	token = ReadToken(scanner);
 	//somefunction that does the rest of this shit.
 
 	Enter(table, token, value);
 }
+*/
 
 void helpFunction(){
 	printf("\n\n");
@@ -68,22 +70,22 @@ main(){
 	/*Enter(table, 'l', &loadFunction);
 	Enter(table, "load", &loadFunction);
 	Enter(table, 'd', &defineFunction);
-	Enter(table, "define", &defineFunction);
-	Enter(table, 'h', &helpFunction);
-	Enter(table, "help", &helpFunction);*/
-	Enter(table, 'q', &quitFunction);
+	Enter(table, "define", &defineFunction);*/
+	Enter(table, "h", &helpFunction);
+	Enter(table, "help", &helpFunction);
+	Enter(table, "q", &quitFunction);
 	Enter(table, "quit", &quitFunction);
 
 
 	while (TRUE)try{
 
+		printf("=> ");
 		line = GetLine();
 		SetScannerString(scanner, line);
 		token = ReadToken(scanner);
-		exp = ParseExp(scanner);
-		value = Eval(exp, env);
+		
 
-		if (token == ':'){
+		if (StringEqual(token, ":")){
 			token = ReadToken(scanner);
 			if (Lookup(table, token) != UNDEFINED){
 				functionPtr = Lookup(table, token);
@@ -95,7 +97,8 @@ main(){
 
 		}
 		else{
-
+			exp = ParseExp(scanner);
+			value = Eval(exp, env);
 		}
 
 	} endtry
