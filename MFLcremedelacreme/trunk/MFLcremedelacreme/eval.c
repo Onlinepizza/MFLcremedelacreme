@@ -2,6 +2,7 @@
 #include "genlib.h"
 #include "strlib.h"
 #include "exp.h"
+#include "env.h"
 #include "eval.h"
 #include "value.h"
 #include "symtab.h"
@@ -15,26 +16,55 @@ static symtabADT variableTable;
 
 /* Private function prototypes */
 
+void InitVariableTable(void);
+int GetIdValue(string name);
+void SetIdentifierValue(string name, int value);
 static int EvalCompound(expADT exp);
 
-/* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	type = ExpType(exp);	switch (type){	case FuncExp:
+/* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	expADT lhs, rhs, ifpart, elsepart;	environmentADT closure;	char op;	type = ExpType(exp);	switch (type){	case FuncExp:
+		closure = NewClosure(env);
 		//rekursivt anrop
 	case IfExp:
-		//rekursivt anrop
+		closure = NewClosure(env);
+		op = GetIfRelOp(exp);
+		switch (op)
+		{
+		case '=':
+			if (Eval(GetIfLHSExpression(exp), closure) == Eval(GetIfRHSExpression(exp), closure)){
+				Eval(GetIfThenPart(exp), closure);
+			}
+			else{
+				Eval(GetIfElsePart(exp), closure);
+			}
+		case '>':
+			if (Eval(GetIfLHSExpression(exp), closure) > Eval(GetIfRHSExpression(exp), closure)){
+				Eval(GetIfThenPart(exp), closure);
+			}
+			else{
+				Eval(GetIfElsePart(exp), closure);
+			}
+		case '<':
+			if (Eval(GetIfLHSExpression(exp), closure) < Eval(GetIfRHSExpression(exp), closure)){
+				Eval(GetIfThenPart(exp), closure);
+			}
+			else{
+				Eval(GetIfElsePart(exp), closure);
+			}
+		}
 	case CallExp:
+		closure = NewClosure(env);
 		//rekursivt anrop
 	case ConstExp:
 		return NewIntegerValue((ExpInteger(exp)));
 	case IdentifierExp:
-		return NewIntegerValue(GetIdentifierValue(ExpIdentifier(exp)));
-	case CompoundExp:		return NewIntegerValue((EvalCompound(exp)));	}}
+		return NewIntegerValue(GetIdValue(ExpIdentifier(exp)));
+	case CompoundExp:		return NewIntegerValue((EvalCompound(exp, env)));	}}
 void InitVariableTable(void)
 {
 	variableTable = NewSymbolTable();
 }
 
-int GetIdentifierValue(string name)
-{
+int GetIdValue(string name){
 	int *ip;
 
 	ip = Lookup(variableTable, name);
@@ -53,10 +83,12 @@ void SetIdentifierValue(string name, int value)
 
 /* Private functions */
 
-static int EvalCompound(expADT exp)
+static int EvalCompound(expADT exp, environmentADT env)
 {
 	char op;
 	int lhs, rhs;
+	environmentADT closure;
+	closure = NewClosure(env);
 
 	op = ExpOperator(exp);
 	if (op == '=') {
@@ -64,8 +96,8 @@ static int EvalCompound(expADT exp)
 		SetIdentifierValue(ExpIdentifier(ExpLHS(exp)), rhs);
 		return (rhs);
 	}
-	lhs = EvalExp(ExpLHS(exp));
-	rhs = EvalExp(ExpRHS(exp));
+	lhs = Eval(ExpLHS(exp), closure);
+	rhs = Eval(ExpRHS(exp), closure);
 	switch (op) {
 	case '+': return (lhs + rhs);
 	case '-': return (lhs - rhs);
