@@ -8,7 +8,7 @@
 #include "parser.h"
 #include "eval.h"
 
-/*
+
 void loadFunction(scannerADT scanner, symtabADT table){
 	FILE * infile;
 	string fileName, key = NULL;
@@ -21,9 +21,9 @@ void loadFunction(scannerADT scanner, symtabADT table){
 		Error("Can't open file.");
 	}
 	else {
-		while (fscanf(infile, "%s %d", key, parserShit()) != EOF) { //key är oinstansierad.
+		/*while (fscanf(infile, "%s %d", key, parserShit()) != EOF) { //key är oinstansierad.
 			Enter(table, key, parserShit());
-		}
+		}*/
 	}
 	fclose(fileName);
 }
@@ -35,7 +35,7 @@ void defineFunction(scannerADT scanner, symtabADT table){
 
 	Enter(table, token, value);
 }
-*/
+
 
 void helpFunction(){
 	printf("\n\n");
