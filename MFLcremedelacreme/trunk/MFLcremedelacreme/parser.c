@@ -38,9 +38,9 @@
 *
 */
 static expADT ReadE(scannerADT scanner);
-static expADT readT(scannerADT scanner);
-static expADT readC(scannerADT scanner);
-static expADT readF(scannerADT scanner);
+static expADT ReadT(scannerADT scanner);
+static expADT ReadC(scannerADT scanner);
+static expADT ReadF(scannerADT scanner);
 
 /*
 * Implementation notes: ParseExp
@@ -95,7 +95,7 @@ static expADT ReadE(scannerADT scanner)
 *   T -> C
 */
 
-static expADT readT(scannerADT scanner){
+static expADT ReadT(scannerADT scanner){
 	expADT exp, rhs;
 	string token;
 	int newPrec;
