@@ -100,8 +100,11 @@ main(){
 
 		}
 		else{
+			SaveToken(scanner, token);
 			exp = ParseExp(scanner);
 			value = Eval(exp, env);
+
+			printf("%d", value);
 		}
 
 	} endtry
