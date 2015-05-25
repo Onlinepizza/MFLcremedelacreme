@@ -27,11 +27,14 @@ void loadFunction(scannerADT scanner, symtabADT table){
 	}
 	fclose(fileName);
 }
-void defineFunction(scannerADT scanner, symtabADT table){
+void defineFunction(scannerADT scanner, symtabADT table, environmentADT env){
+	expADT exp;
 	string token;
 	int value = 0;
 	token = ReadToken(scanner);
-	//somefunction that does the rest of this shit.
+
+	exp = ParseExp(scanner);
+	value = Eval(exp, env);
 
 	Enter(table, token, value);
 }
@@ -59,7 +62,7 @@ main(){
 	expADT exp;
 	valueADT value;
 
-	void(*functionPtr)(scannerADT, symtabADT);
+	void(*functionPtr)(scannerADT, symtabADT, environmentADT);
 
 	scanner = NewScanner();
 	env = NewEnvironment();
@@ -67,10 +70,10 @@ main(){
 
 	GetScannerSpaceOption(scanner, IgnoreSpaces);
 
-	/*Enter(table, 'l', &loadFunction);
+	Enter(table, "l", &loadFunction);
 	Enter(table, "load", &loadFunction);
-	Enter(table, 'd', &defineFunction);
-	Enter(table, "define", &defineFunction);*/
+	Enter(table, "d", &defineFunction);
+	Enter(table, "define", &defineFunction);
 	Enter(table, "h", &helpFunction);
 	Enter(table, "help", &helpFunction);
 	Enter(table, "q", &quitFunction);
@@ -89,7 +92,7 @@ main(){
 			token = ReadToken(scanner);
 			if (Lookup(table, token) != UNDEFINED){
 				functionPtr = Lookup(table, token);
-				(*functionPtr)(scanner, table);
+				(*functionPtr)(scanner, table, env);
 			}
 			else{
 				Error("Invalid input");
