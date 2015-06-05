@@ -75,6 +75,7 @@ void InitVariableTable(void)
 	variableTable = NewSymbolTable();
 }
 
+
 int GetIdValue(string name){
 	int *ip;
 
@@ -98,22 +99,19 @@ static int EvalCompound(expADT exp, environmentADT env)
 {
 	char op;
 	int lhs, rhs;
-	environmentADT closure;
-	closure = NewClosure(env);
-
 	op = ExpOperator(exp);
-	if (op == '=') {
-		rhs = Eval(ExpRHS(exp), closure);
-		SetIdentifierValue(ExpIdentifier(ExpLHS(exp)), rhs);
-		return (rhs);
-	}
-	lhs = ExpInteger(ExpLHS(exp));
-	rhs = ExpInteger(ExpRHS(exp));
+
+	lhs = GetIntValue(Eval(ExpLHS(exp), env));
+	rhs = GetIntValue(Eval(ExpRHS(exp), env));
 	switch (op) {
 	case '+': return (lhs + rhs);
 	case '-': return (lhs - rhs);
 	case '*': return (lhs * rhs);
-	case '/': return (lhs / rhs);
+	case '/':
+		if (rhs < 1){
+			Error("division by zero");
+		}
+		return (lhs / rhs);
 	default:  Error("Illegal operator");
 	}
 }
