@@ -10,10 +10,11 @@
 #include "print.h"
 #include "ctype.h"
 
+void defineFunction(scannerADT scanner, environmentADT env);
 
-void loadFunction(scannerADT scanner, symtabADT table){
+void loadFunction(scannerADT scanner, environmentADT env){
 	FILE * infile;
-	string fileName, key = NULL;
+	string fileName, read;
 	int value = 0;
 
 	fileName = GetLine();
@@ -23,31 +24,38 @@ void loadFunction(scannerADT scanner, symtabADT table){
 		Error("Can't open file.");
 	}
 	else {
-		/*while (fscanf(infile, "%s %d", key, parserShit()) != EOF) { //key är oinstansierad.
-			Enter(table, key, parserShit());
-		}*/
+
+		while (read = GetLine(infile)) {
+			SetScannerString(scanner, read);
+			defineFunction(scanner, env);
+		}
+
 	}
 	fclose(fileName);
 }
 
-void defineFunction(scannerADT scanner, symtabADT table, environmentADT env){
+void defineFunction(scannerADT scanner, environmentADT env){
 	expADT exp;
-	string token;
+	string token, ident;
 	valueADT value;
-	int result;
+	environmentADT close;
+
+	close = NewClosure(env);
 
 	token = ReadToken(scanner);
+	ident = token;
+
+	while (!StringEqual(token, "="))
+		token = ReadToken(scanner);
 
 	exp = ParseExp(scanner);
-	value = Eval(exp, env);
-	result = GetIntValue(value);
 
-	Enter(table, token, value);
+	DefineIdentifier(env, ident, exp, close);
 }
 
 
 void helpFunction(){
-	printf("\n\n");
+	system("cls");
 
 	printf("My name is A.I - helper, I'm going to write out the commands:\n");
 	printf("1: => Load - To load an existing file.\n");
@@ -66,11 +74,9 @@ main(){
 	environmentADT env;
 	symtabADT table;
 	expADT exp;
-	valueADT value;
-	
+	valueADT value;	
 	int result, var;
-
-	void(*functionPtr)(scannerADT, symtabADT, environmentADT);
+	void(*functionPtr)(scannerADT, environmentADT);
 
 	scanner = NewScanner();
 	env = NewEnvironment();
@@ -94,13 +100,12 @@ main(){
 		line = GetLine();
 		SetScannerString(scanner, line);
 		token = ReadToken(scanner);
-		SaveToken(scanner, token);
 		
 		if (StringEqual(token, ":")){
 			token = ReadToken(scanner);
 			if (Lookup(table, token) != UNDEFINED){
 				functionPtr = Lookup(table, token);
-				(*functionPtr)(scanner, table, env);
+				(*functionPtr)(scanner, env);
 			}
 			else{
 				Error("Invalid input");
@@ -108,6 +113,7 @@ main(){
 
 		}
 		else{		
+			SaveToken(scanner, token);
 			exp = ParseExp(scanner);
 			value = Eval(exp, env);
 			PrintValue(value);
