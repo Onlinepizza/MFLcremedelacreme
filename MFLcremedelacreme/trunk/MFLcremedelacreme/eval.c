@@ -63,8 +63,8 @@ static int EvalCompound(expADT exp);
 	case ConstExp:
 		return NewIntegerValue((ExpInteger(exp)));
 	case IdentifierExp:
-		identifier = GetIdentifierValue(ExpIdentifier(exp),env);
-		closure = GetFuncValueBody(identifier);
+		identifier = GetIdentifierValue(env, ExpIdentifier(exp));
+		closure = GetFuncValueClosure(identifier);
 		body = GetFuncValueBody(identifier);
 		return Eval(body, closure);
 	case CompoundExp:		return NewIntegerValue((EvalCompound(exp, env)));	}}
