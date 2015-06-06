@@ -150,6 +150,7 @@ static expADT ReadC(scannerADT scanner){
 static expADT ReadF(scannerADT scanner){
 	expADT exp = NULL, lhs, rhs = NULL, ifPart, elsePart;
 	string token;
+	string argument;
 	char realop;
 
 	token = ReadToken(scanner);
@@ -177,11 +178,13 @@ static expADT ReadF(scannerADT scanner){
 
 	}
 	else if (StringEqual(token, "func")){
+		token = ReadToken(scanner);
 		if (StringEqual(token, "(")) {
-			token = ReadToken(scanner);
+			argument = ReadToken(scanner);
 			if (!StringEqual(ReadToken(scanner), ")")) {
 				Error("Unbalanced parentheses");
 			}
+			token = ReadToken(scanner);
 			if (StringEqual(token, "{")) {
 				rhs = ReadE(scanner);
 				if (!StringEqual(ReadToken(scanner), "}")) {
