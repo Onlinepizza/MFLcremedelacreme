@@ -28,7 +28,7 @@ void loadFunction(scannerADT scanner, environmentADT env){
 		
 		while (read != NULL) {
 			read = ReadLine(infile);
-			if (read[0] != '#'){
+			if (read[0] != '#' || !StringEqual(read, "")){
 				SetScannerString(scanner, read);
 				defineFunction(scanner, env);
 			}
