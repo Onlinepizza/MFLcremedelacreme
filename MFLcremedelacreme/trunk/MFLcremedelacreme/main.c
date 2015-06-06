@@ -8,7 +8,8 @@
 #include "parser.h"
 #include "eval.h"
 #include "print.h"
-#include "ctype.h"
+#include "simpio.h"
+#include <ctype.h>
 
 void defineFunction(scannerADT scanner, environmentADT env);
 
@@ -16,7 +17,7 @@ void loadFunction(scannerADT scanner, environmentADT env){
 	FILE * infile;
 	string fileName, read;
 	int value = 0;
-
+	read = "";
 	fileName = GetLine();
 	infile = fopen(fileName, "r");
 
@@ -24,13 +25,20 @@ void loadFunction(scannerADT scanner, environmentADT env){
 		Error("Can't open file.");
 	}
 	else {
-
-		while (read = GetLine(infile)) {
-			SetScannerString(scanner, read);
-			defineFunction(scanner, env);
+		
+		while (read != NULL) {
+			read = ReadLine(infile);
+			if (read[0] == '#'){
+				break;
+			}
+			else{
+				SetScannerString(scanner, read);
+				defineFunction(scanner, env);
+			}
 		}
 
 	}
+	printf("file loaded\n");
 	fclose(fileName);
 }
 
@@ -74,7 +82,7 @@ main(){
 	environmentADT env;
 	symtabADT table;
 	expADT exp;
-	valueADT value;	
+	valueADT value;
 	int result, var;
 	void(*functionPtr)(scannerADT, environmentADT);
 
@@ -100,7 +108,7 @@ main(){
 		line = GetLine();
 		SetScannerString(scanner, line);
 		token = ReadToken(scanner);
-		
+
 		if (StringEqual(token, ":")){
 			token = ReadToken(scanner);
 			if (Lookup(table, token) != UNDEFINED){
@@ -112,7 +120,7 @@ main(){
 			}
 
 		}
-		else{		
+		else{
 			SaveToken(scanner, token);
 			exp = ParseExp(scanner);
 			value = Eval(exp, env);
