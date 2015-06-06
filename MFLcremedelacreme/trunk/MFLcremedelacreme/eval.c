@@ -17,7 +17,7 @@
 
 static int EvalCompound(expADT exp);
 
-/* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	expADT lhs = NULL, rhs = NULL, ifpart = NULL, elsepart = NULL, funcExp = NULL, arg = NULL;	valueADT value;	environmentADT closure;	char op;	string id;	type = ExpType(exp);	switch (type){	case FuncExp:
+/* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	expADT lhs = NULL, rhs = NULL, ifpart = NULL, elsepart = NULL, funcExp = NULL, arg = NULL, body = NULL;	valueADT value, identifier;	environmentADT closure;	char op;	string id;	type = ExpType(exp);	switch (type){	case FuncExp:
 		closure = NewClosure(env);
 		return NewFuncValue(GetFuncFormalArg(exp), GetFuncBody(exp), closure);
 	case IfExp:
@@ -63,7 +63,10 @@ static int EvalCompound(expADT exp);
 	case ConstExp:
 		return NewIntegerValue((ExpInteger(exp)));
 	case IdentifierExp:
-		return GetIdentifierValue(ExpIdentifier(exp),env);
+		identifier = GetIdentifierValue(ExpIdentifier(exp),env);
+		closure = GetFuncValueBody(identifier);
+		body = GetFuncValueBody(identifier);
+		return Eval(body, closure);
 	case CompoundExp:		return NewIntegerValue((EvalCompound(exp, env)));	}}
 
 /* Private functions */
