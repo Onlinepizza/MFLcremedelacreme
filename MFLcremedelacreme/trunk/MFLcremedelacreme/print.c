@@ -45,10 +45,8 @@ void PrintValue(valueADT value){
 	switch (type)
 	{
 	case FuncValue:
-		//oklart i vilken ordning detta ska att ske.
-		printf("%s", GetFuncValueFormalArg(value));
-		PrintExp(GetFuncValueBody(value));
-		//environmentADT GetFuncValueClosure(valueADT value); //vet ej hur man hanterar returntypen.
+		printf("%s = ", GetFuncValueFormalArg(value));
+		printf("%d/n", GetIntValue(value));
 		break;
 	case IntValue:
 		printf("%d", GetIntValue(value));

@@ -12,13 +12,9 @@
 * This table keeps track of the values for each variable.
 */
 
-static symtabADT variableTable;
 
 /* Private function prototypes */
 
-void InitVariableTable(void);
-int GetIdValue(string name);
-void SetIdentifierValue(string name, int value);
 static int EvalCompound(expADT exp);
 
 /* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	expADT lhs = NULL, rhs = NULL, ifpart = NULL, elsepart = NULL, funcExp = NULL, arg = NULL;	valueADT value;	environmentADT closure;	char op;	string id;	type = ExpType(exp);	switch (type){	case FuncExp:
@@ -54,7 +50,7 @@ static int EvalCompound(expADT exp);
 	case CallExp:
 		value = Eval(GetCallExp(exp), env);
 		funcExp = GetCallExp(exp);
-		if ( ValueType(value) == FuncValue){
+		if (ValueType(value) == FuncValue){
 			arg = GetCallActualArg(exp);
 			closure = GetFuncValueClosure(value);
 			id = GetFuncValueFormalArg(value);
@@ -64,34 +60,11 @@ static int EvalCompound(expADT exp);
 		else{
 			return value;
 		}
-		//rekursivt anrop
 	case ConstExp:
 		return NewIntegerValue((ExpInteger(exp)));
 	case IdentifierExp:
-		return NewIntegerValue(GetIdValue(ExpIdentifier(exp)));
+		return GetIdentifierValue(ExpIdentifier(exp),env);
 	case CompoundExp:		return NewIntegerValue((EvalCompound(exp, env)));	}}
-void InitVariableTable(void)
-{
-	variableTable = NewSymbolTable();
-}
-
-
-int GetIdValue(string name){
-	int *ip;
-
-	ip = Lookup(variableTable, name);
-	if (ip == UNDEFINED)  Error("%s is undefined", name);
-	return (*ip);
-}
-
-void SetIdentifierValue(string name, int value)
-{
-	int *ip;
-
-	ip = New(int *);
-	*ip = value;
-	Enter(variableTable, name, ip);
-}
 
 /* Private functions */
 
