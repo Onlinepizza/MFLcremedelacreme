@@ -43,7 +43,7 @@ void PrintValue(valueADT value){
 	switch (type)
 	{
 	case FuncValue:
-		printf("<function with an argument>");
+		printf("<function with one argument>");
 		/*
 		printf("%s = ", GetFuncValueFormalArg(value));
 		printf("%d/n", GetIntValue(value));

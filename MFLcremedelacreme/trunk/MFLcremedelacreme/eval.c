@@ -5,19 +5,13 @@
 #include "env.h"
 #include "eval.h"
 #include "value.h"
-#include "symtab.h"
-/*
-* Private variable: variableTable
-* -------------------------------
-* This table keeps track of the values for each variable.
-*/
-
+#include "symtab.h"
 
 /* Private function prototypes */
 
 static int EvalCompound(expADT exp);
 
-/* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	expADT lhs = NULL, rhs = NULL, ifpart = NULL, elsepart = NULL, funcExp = NULL, arg = NULL, body = NULL;	valueADT value, identifier;	environmentADT closure;	char op;	string id;	int larg, rarg;	type = ExpType(exp);	switch (type){	case FuncExp:
+/* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	expADT lhs = NULL, rhs = NULL, ifpart = NULL, elsepart = NULL, funcExp = NULL, arg = NULL, body = NULL;	valueADT value = NULL, identifier = NULL;	environmentADT closure = NULL;	char op;	string id;	int larg, rarg;	type = ExpType(exp);	switch (type){	case FuncExp:
 		closure = NewClosure(env);
 		return NewFuncValue(GetFuncFormalArg(exp), GetFuncBody(exp), closure);
 	case IfExp:
@@ -50,10 +44,11 @@ static int EvalCompound(expADT exp);
 		}
 		
 	case CallExp:
-		value = Eval(GetCallExp(exp), env);
 		funcExp = GetCallExp(exp);
-		if (ValueType(value) == FuncValue){
-			arg = GetCallActualArg(exp);
+		arg = GetCallActualArg(exp);
+		value = Eval(funcExp, env);
+
+		if (ValueType(value) == FuncValue){			
 			closure = GetFuncValueClosure(value);
 			id = GetFuncValueFormalArg(value);
 			DefineIdentifier(closure, id, arg, env);
@@ -65,7 +60,8 @@ static int EvalCompound(expADT exp);
 	case ConstExp:
 		return NewIntegerValue((ExpInteger(exp)));
 	case IdentifierExp:
-		identifier = GetIdentifierValue(env, ExpIdentifier(exp));
+		id = ExpIdentifier(exp);
+		identifier = GetIdentifierValue(env, id);
 		closure = GetFuncValueClosure(identifier);
 		body = GetFuncValueBody(identifier);
 		return Eval(body, closure);
