@@ -17,33 +17,35 @@
 
 static int EvalCompound(expADT exp);
 
-/* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	expADT lhs = NULL, rhs = NULL, ifpart = NULL, elsepart = NULL, funcExp = NULL, arg = NULL, body = NULL;	valueADT value, identifier;	environmentADT closure;	char op;	string id;	type = ExpType(exp);	switch (type){	case FuncExp:
+/* Exported entries */valueADT Eval(expADT exp, environmentADT env){	exptypeT type;	expADT lhs = NULL, rhs = NULL, ifpart = NULL, elsepart = NULL, funcExp = NULL, arg = NULL, body = NULL;	valueADT value, identifier;	environmentADT closure;	char op;	string id;	int larg, rarg;	type = ExpType(exp);	switch (type){	case FuncExp:
 		closure = NewClosure(env);
 		return NewFuncValue(GetFuncFormalArg(exp), GetFuncBody(exp), closure);
 	case IfExp:
 		closure = NewClosure(env);
 		op = GetIfRelOp(exp);
+		larg = GetIntValue(Eval(GetIfLHSExpression(exp), closure));		rarg = GetIntValue(Eval(GetIfRHSExpression(exp), closure));
+
 		switch (op){
 		case '=':
-			if (GetIntValue(Eval(GetIfLHSExpression(exp), closure)) == GetIntValue(Eval(GetIfRHSExpression(exp), closure))){
-				return Eval(GetIfThenPart(exp), closure);
+			if (larg == rarg){
+				return Eval(GetIfThenPart(exp), env);
 			}
 			else{
-				return Eval(GetIfElsePart(exp), closure);
+				return Eval(GetIfElsePart(exp), env);
 			}
 		case '>':
-			if (GetIntValue(Eval(GetIfLHSExpression(exp), closure)) > GetIntValue(Eval(GetIfRHSExpression(exp), closure))){
-				return Eval(GetIfThenPart(exp), closure);
+			if (larg > rarg){
+				return Eval(GetIfThenPart(exp), env);
 			}
 			else{
-				return Eval(GetIfElsePart(exp), closure);
+				return Eval(GetIfElsePart(exp), env);
 			}
 		case '<':
-			if (GetIntValue(Eval(GetIfLHSExpression(exp), closure)) < GetIntValue(Eval(GetIfRHSExpression(exp), closure))){
-				return Eval(GetIfThenPart(exp), closure);
+			if (larg < rarg){
+				return Eval(GetIfThenPart(exp), env);
 			}
 			else{
-				return Eval(GetIfElsePart(exp), closure);
+				return Eval(GetIfElsePart(exp), env);
 			}
 		}
 		

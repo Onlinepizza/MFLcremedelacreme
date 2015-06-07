@@ -13,8 +13,6 @@ void PrintExp(expADT exp){
 		PrintExp(GetFuncBody(exp));
 		break;
 	case IfExp:
-		//Osäker på I vilken ordning print bör ske.
-		//F -> if E RelOp E then E else E
 		PrintExp(GetIfLHSExpression(exp));
 		printf("%c", GetIfRelOp(exp));
 		PrintExp(GetIfRHSExpression(exp));
@@ -45,7 +43,7 @@ void PrintValue(valueADT value){
 	switch (type)
 	{
 	case FuncValue:
-		printf("<funktion med ett argument>");
+		printf("<function with an argument>");
 		/*
 		printf("%s = ", GetFuncValueFormalArg(value));
 		printf("%d/n", GetIntValue(value));
