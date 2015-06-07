@@ -127,15 +127,15 @@ static expADT ReadC(scannerADT scanner){
 	token = ReadToken(scanner);
 	if (StringEqual(token, "(")) {
 		rhs = ReadE(scanner);
-		if (!StringEqual(ReadToken(scanner), ")")){
+		if (!StringEqual(ReadToken(scanner), ")"))
 			Error("Unbalanced parentheses");
-		}
-		exp = NewCallExp(exp, rhs);		//C -> F (E)
+		
+	exp = NewCallExp(exp, rhs);		//C -> F (E)
 	}
 	else {
 		SaveToken(scanner, token);
 	}
-	return(exp);
+	return (exp);
 }
 
 /*	 Function: readF
