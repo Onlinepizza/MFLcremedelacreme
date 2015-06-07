@@ -54,7 +54,7 @@ static int EvalCompound(expADT exp);
 			arg = GetCallActualArg(exp);
 			closure = GetFuncValueClosure(value);
 			id = GetFuncValueFormalArg(value);
-			DefineIdentifier(closure, funcExp, arg, env);
+			DefineIdentifier(closure, id, arg, env);
 			return Eval(GetFuncValueBody(value), closure);
 		}
 		else{
