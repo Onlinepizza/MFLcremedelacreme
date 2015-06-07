@@ -171,7 +171,7 @@ static expADT ReadF(scannerADT scanner){
 				ifPart = ReadE(scanner);
 				if (StringEqual(ReadToken(scanner), "else")){
 					elsePart = ReadE(scanner);
-					exp = NewIfExp(lhs, realop, rhs, ifPart, elsePart); //F -> if E RelOp E then E else E
+					return NewIfExp(lhs, realop, rhs, ifPart, elsePart); //F -> if E RelOp E then E else E
 				}
 			}
 		}
@@ -191,7 +191,7 @@ static expADT ReadF(scannerADT scanner){
 					Error("Unbalanced parentheses");
 				}
 			}
-			exp = NewFuncExp(token, rhs); // F -> func (identifier) { E }
+			return NewFuncExp(token, rhs); // F -> func (identifier) { E }
 		}
 	}
 	else if (isalpha(token[0])){
