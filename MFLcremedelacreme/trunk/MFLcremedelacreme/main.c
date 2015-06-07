@@ -27,11 +27,11 @@ void loadFunction(scannerADT scanner, environmentADT env){
 	else {
 		
 		while (read != NULL) {
-			read = ReadLine(infile);
-			if (read[0] != '#' || !StringEqual(read, "")){
+			if (read[0] != '#' && read[0] != '\0'){
 				SetScannerString(scanner, read);
 				defineFunction(scanner, env);
 			}
+			read = ReadLine(infile);
 		}
 
 	}
