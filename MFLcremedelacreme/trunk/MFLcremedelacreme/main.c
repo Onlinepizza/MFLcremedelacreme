@@ -11,7 +11,24 @@
 #include "simpio.h"
 #include <ctype.h>
 
-void defineFunction(scannerADT scanner, environmentADT env);
+void defineFunction(scannerADT scanner, environmentADT env){
+	expADT exp;
+	string token, ident;
+	valueADT value;
+	environmentADT close;
+
+	close = NewClosure(env);
+
+	token = ReadToken(scanner);
+	ident = token;
+
+	while (!StringEqual(token, "="))
+		token = ReadToken(scanner);
+
+	exp = ParseExp(scanner);
+
+	DefineIdentifier(env, ident, exp, close);
+}
 
 void loadFunction(scannerADT scanner, environmentADT env){
 	FILE * infile;
@@ -47,26 +64,6 @@ void loadFunction(scannerADT scanner, environmentADT env){
 	fclose(fileName);
 }
 
-void defineFunction(scannerADT scanner, environmentADT env){
-	expADT exp;
-	string token, ident;
-	valueADT value;
-	environmentADT close;
-
-	close = NewClosure(env);
-
-	token = ReadToken(scanner);
-	ident = token;
-
-	while (!StringEqual(token, "="))
-		token = ReadToken(scanner);
-
-	exp = ParseExp(scanner);
-
-	DefineIdentifier(env, ident, exp, close);
-}
-
-
 void helpFunction(){
 	system("cls");
 
@@ -79,6 +76,18 @@ void helpFunction(){
 
 void quitFunction(){
 	exit(0);
+}
+
+void initTable(symtabADT table){
+	Enter(table, "l", &loadFunction);
+	Enter(table, "load", &loadFunction);
+	Enter(table, "d", &defineFunction);
+	Enter(table, "define", &defineFunction);
+	Enter(table, "h", &helpFunction);
+	Enter(table, "help", &helpFunction);
+	Enter(table, "q", &quitFunction);
+	Enter(table, "quit", &quitFunction);
+
 }
 
 main(){
@@ -97,15 +106,7 @@ main(){
 
 	SetScannerSpaceOption(scanner, IgnoreSpaces);
 
-	Enter(table, "l", &loadFunction);
-	Enter(table, "load", &loadFunction);
-	Enter(table, "d", &defineFunction);
-	Enter(table, "define", &defineFunction);
-	Enter(table, "h", &helpFunction);
-	Enter(table, "help", &helpFunction);
-	Enter(table, "q", &quitFunction);
-	Enter(table, "quit", &quitFunction);
-
+	initTable(table);
 
 	while (TRUE)try{
 
