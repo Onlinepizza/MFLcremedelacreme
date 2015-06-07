@@ -18,14 +18,21 @@ void loadFunction(scannerADT scanner, environmentADT env){
 	string fileName, read;
 	int value = 0;
 	read = "";
-	fileName = GetLine();
+	printf("\n");
+	
+
+	fileName = ReadToken(scanner);
+	fileName = Concat(fileName, ReadToken(scanner));
+	fileName = Concat(fileName, ReadToken(scanner));
+	
+
 	infile = fopen(fileName, "r");
 
 	if (infile == NULL){
 		Error("Can't open file.");
 	}
 	else {
-		
+
 		while (read != NULL) {
 			if (read[0] != '#' && read[0] != '\0'){
 				SetScannerString(scanner, read);
@@ -35,7 +42,8 @@ void loadFunction(scannerADT scanner, environmentADT env){
 		}
 
 	}
-	printf("file loaded\n");
+	printf("\n");
+	printf("File loaded.\n");
 	fclose(fileName);
 }
 
